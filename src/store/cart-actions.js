@@ -1,0 +1,79 @@
+import { uiActions } from './ui-slice';
+import { cartActions } from './cart-slice';
+
+const fetchCartData = () => {
+  return async (dispatch) => {
+    const fetchData = async () => {
+      const response = await fetch(
+        `${process.env.REACT_APP_FIREBASE_URI}/redux-cart.json`
+      );
+      if (!response.ok) throw new Error('Could not fetch data!');
+      return await response.json();
+    };
+
+    try {
+      const cartData = await fetchData();
+      dispatch(
+        cartActions.populateCart({
+          items: cartData?.items || [],
+          totalQuantity: cartData?.totalQuantity || 0,
+        })
+      );
+    } catch (error) {
+      dispatch(
+        uiActions.showNotification({
+          status: 'error',
+          title: 'Error!',
+          message: 'fetching cart data failed!',
+        })
+      );
+    }
+  };
+};
+
+const sendCartData = (cartData) => {
+  return async (dispatch) => {
+    dispatch(
+      uiActions.showNotification({
+        status: 'pending',
+        title: 'Sending...',
+        message: 'Sending cart data!',
+      })
+    );
+
+    const sendRequest = async () => {
+      const response = await fetch(
+        `${process.env.REACT_APP_FIREBASE_URI}/redux-cart.json`,
+        {
+          method: 'PUT',
+          body: JSON.stringify({
+            items: cartData.items,
+            totalQuantity: cartData.totalQuantity,
+          }),
+        }
+      );
+      if (!response.ok) throw new Error('Something went wrong!');
+    };
+
+    try {
+      await sendRequest();
+      dispatch(
+        uiActions.showNotification({
+          status: 'success',
+          title: 'Success!',
+          message: 'Sent cart data successfully!',
+        })
+      );
+    } catch (error) {
+      dispatch(
+        uiActions.showNotification({
+          status: 'error',
+          title: 'Error!',
+          message: 'Sending cart data failed!',
+        })
+      );
+    }
+  };
+};
+
+export { sendCartData, fetchCartData };
