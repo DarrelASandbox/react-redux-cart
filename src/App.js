@@ -15,7 +15,9 @@ function App() {
 
   const dispatch = useDispatch();
 
-  useEffect(() => dispatch(fetchCartData()), [dispatch]);
+  useEffect(() => {
+    dispatch(fetchCartData());
+  }, [dispatch]);
 
   useEffect(() => {
     if (isInitialLoad) {
