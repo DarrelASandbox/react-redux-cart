@@ -36,6 +36,11 @@
 
 &nbsp;
 
+- Thunk is a function that delays an action until later
+- An action creator function that does NOT return the action itself but another function which eventually returns the action
+
+&nbsp;
+
 ---
 
 &nbsp;
